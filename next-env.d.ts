@@ -13,3 +13,7 @@ declare interface MainBodyProps{
   h1Text: String,
   h2Text: String,
 }
+
+declare interface VideoParamsProps{
+  params: any,
+}

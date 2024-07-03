@@ -4,8 +4,10 @@ import React, { useState } from 'react'
 import CloudIcon from '../icons/CloudIcon'
 import axios from 'axios'
 import { UploadSpinner } from '../icons/UploadSpinner'
+import { useRouter } from 'next/navigation'
 
 const UploadButton = () => {
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
 
   const upload = async (ev: any) => {
@@ -21,6 +23,8 @@ const UploadButton = () => {
       });
       setIsUploading(false);
       console.log(res.data)
+      const newName = res.data.newName; // find the name of the file u just upload
+      router.push('/' + newName); // redirect to a page with unique id of the vid just uploaded
     }
   }
   return (
