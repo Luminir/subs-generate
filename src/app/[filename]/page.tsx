@@ -75,7 +75,7 @@ const page = ({params}: VideoParamsProps) => {
         <h2 className=' text-2xl mb-4 text-white/60'>
             Result
         </h2>
-            <ResultedVid filename={filename} />
+            <ResultedVid filename={filename} transcriptionItems={awsTranscriptionItem} />
         </div>
     </>
   )

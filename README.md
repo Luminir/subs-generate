@@ -44,3 +44,5 @@ npm install @aws-sdk/client-s3
 npm install uniqid
 
 npm i styled-components
+
+npm i @ffmpeg/ffmpeg
