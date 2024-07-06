@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { clearTranscriptionItems } from '../libs/AwsTranscribHelper';
 import TranscriptionItem from '../components/Transcription';
 import SparkleIcon from '../icons/SparkleIcon';
+import ResultedVid from '../components/ResultedVid';
 
 const page = ({params}: VideoParamsProps) => {
     // console.log(JSON.stringify(params))
@@ -37,6 +38,12 @@ const page = ({params}: VideoParamsProps) => {
       }});
     }
 
+    function updateTranscriptionItem(i, prop, ev){
+      const newAwsItems = [...awsTranscriptionItem];
+      newAwsItems[i][prop] = ev.target.value;
+      setAwsTranscriptionItems(newAwsItems);
+    }
+
     if (isTranscribing) {
       return (<div>Transcribing your vid...</div>);
     }
@@ -56,26 +63,19 @@ const page = ({params}: VideoParamsProps) => {
           <div className=' '>Content:</div>
         </div>
       </div>
-      {awsTranscriptionItem.length > 0 && (
-          awsTranscriptionItem.map((item) => {
-            <TranscriptionItem item={item} />
+      {awsTranscriptionItem.length > 0 &&
+          awsTranscriptionItem.map((item, key) => {
+            <TranscriptionItem item={item} 
+              handleStartTimeChange={(ev)=> {updateTranscriptionItem(key, 'start_time', ev)}}
+              handleEndTimeChange={(ev)=> {updateTranscriptionItem(key, 'end_time', ev)}}
+              handleContentChange={(ev)=> {updateTranscriptionItem(key, 'content', ev)}} />
           })
-        )}
+        }
       <div>
         <h2 className=' text-2xl mb-4 text-white/60'>
             Result
         </h2>
-        <div className=' relative my-3'>
-          <button className='bg-blue-300 px-4 py-2 rounded-full border-2 border-blue-950 border-solid inline-flex hover:cursor-pointer'>
-              <SparkleIcon/>
-               <span>Generate captions</span>
-          </button>
-        </div>
-        <div className=' rounded-xl overflow-hidden'>
-        <video 
-        controls
-        src={"https://trannamson-caption-generator.s3.amazonaws.com/" + filename}></video>
-      </div>
+            <ResultedVid filename={filename} />
         </div>
     </>
   )

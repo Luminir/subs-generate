@@ -17,3 +17,10 @@ declare interface MainBodyProps{
 declare interface VideoParamsProps{
   params: any,
 }
+
+declare interface TransactionItemProps{
+  item: any | any[],
+  handleStartTimeChange: Function,
+  handleEndTimeChange: Function,
+  handleContentChange: Function,
+}
