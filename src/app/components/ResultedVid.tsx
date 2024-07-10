@@ -11,6 +11,7 @@ const ResultedVid = ({ filename, transcriptionItems }: any | any[]) => {
   const [loaded, setLoaded] = useState(false);
   const [primaryColour, setPrimaryColour] = useState('#FFFFFF');
   const [outlineColor, setOutlineColor] = useState('#000000');
+  const [progress, setProgress] = useState(1);
   const ffmpegRef = useRef(new FFmpeg());
   const videoRef = useRef(null);
   useEffect(() => {
@@ -43,10 +44,30 @@ const ResultedVid = ({ filename, transcriptionItems }: any | any[]) => {
     const srt = transcriptionItemsToSrt(transcriptionItems);
     await ffmpeg.writeFile(filename, await fetchFile(videoUrl));
     await ffmpeg.writeFile('subs.srt', srt);
+    await new Promise((resolve, reject) => {
+      videoRef.current.onloadedmetadata = resolve;
+    });
+    const ffmpeg = ffmpegRef.current;
+    const duration = videoRef.current.duration;
+    console.log(duration);
     // console.log(transcriptionItemsToSrt(transcriptionItems));
     ffmpeg.on('log', ({ message }) => {
       // messageRef.current.innerHTML = message;
-      console.log(message);
+      const regexResult = /time=([0-9:.]+)/.exec(message);
+      // console.log(regexResult);
+      // console.log(message);
+      if(regexResult && regexResult?.[1]){
+        const howMuchIsDone = regexResult?.[1];
+        // console.log({howMuchIsDone});
+        const [Hours, Minutes, seconds] = howMuchIsDone.split(':');
+        const doneHours = Number(Hours);
+        const doneMinutes = Number(Minutes);
+        const doneSeconds = Number(seconds);
+        // console.log({doneHours, doneMinutes, doneSeconds});
+        const doneTotalSeconds = doneHours * 3600 + doneMinutes * 60 + doneSeconds;
+        const videoProgress = doneTotalSeconds / duration;
+        setProgress(videoProgress);
+      }
     });
     await ffmpeg.exec([
       '-i', filename, 
@@ -60,6 +81,7 @@ const ResultedVid = ({ filename, transcriptionItems }: any | any[]) => {
     const data = await ffmpeg.readFile('output.mp4');
     videoRef.current.src =
         URL.createObjectURL(new Blob([data.buffer], {type: 'video/mp4'}));
+        setProgress(1);
 }
 
   return (
@@ -78,7 +100,19 @@ const ResultedVid = ({ filename, transcriptionItems }: any | any[]) => {
                <span>Generate captions</span>
           </button>
         </div>
-        <div className=' rounded-xl overflow-hidden'>
+        <div className=' rounded-xl overflow-hidden relative'>
+          {progress && progress < 1 && (
+            <div className=' absolute inset-0 bg-black/80 text-white flex items-center'>
+              <div className=' w-full text-center'>
+                <h3 className=' text-white text-3xl w-full text-center'>
+                    {parseInt(progress * 100)}%
+                </h3>
+                <div className=' bg-purple-500/50 mx-4 rounded-lg overflow-hidden'>
+                  <div className=' bg-green-500' style={{width: progress * 100 +'%'}}/>
+                </div>
+              </div>
+            </div>
+          )}
         <video
         ref={videoRef}
         data-video={0}
