@@ -38,9 +38,12 @@ const page = ({params}: VideoParamsProps) => {
       }});
     }
 
-    function updateTranscriptionItem(i, prop, ev){
+    function updateTranscriptionItem(i: number, prop: any | any[], ev: any | any[]){
       const newAwsItems = [...awsTranscriptionItem];
-      newAwsItems[i][prop] = ev.target.value;
+      const newItem = {...newAwsItems[i]};
+      newItem[prop] = ev.target.value;
+      console.log(newItem);
+      newAwsItems[i] = newItem;
       setAwsTranscriptionItems(newAwsItems);
     }
 

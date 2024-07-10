@@ -21,7 +21,7 @@ function secondsToHHMMSSMS(timeString: any | any[]) {
 export function transcriptionItemsToSrt(items: any | any[]){
   let srt = '';
   let i = 1;
-  items.forEach((item: any | any[]) => {
+  items.filter((item: any | any[]) => {!!item} ).forEach((item: any | any[]) => {
     // segment
     srt += i + '\n';
     // timestamps
